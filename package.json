@@ -1,0 +1,21 @@
+{
+  "name": "limitless-ai-to-obsidian-sync",
+  "version": "1.0.0",
+  "description": "Limitless AI Pendant → Obsidian vault 自動キャプチャ",
+  "main": "src/sync.js",
+  "type": "module",
+  "scripts": {
+    "sync": "node src/sync.js",
+    "test": "node src/sync.js --test",
+    "start": "node src/sync.js"
+  },
+  "dependencies": {},
+  "keywords": [
+    "limitless-ai",
+    "obsidian",
+    "automation",
+    "pendant"
+  ],
+  "author": "postcabinets",
+  "license": "MIT"
+}

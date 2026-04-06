@@ -1,0 +1,59 @@
+name: Daily Limitless AI → Obsidian Sync
+
+on:
+  schedule:
+    # 毎日 00:30 UTC = 09:30 JST
+    - cron: '30 0 * * *'
+
+  # 手動トリガー
+  workflow_dispatch:
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout limitless-ai-to-obsidian-sync
+        uses: actions/checkout@v3
+        with:
+          repository: postcabinets/limitless-ai-to-obsidian-sync
+
+      - name: Clone obsidian-vault
+        run: |
+          git clone https://github.com/postcabinets/obsidian-vault.git vault
+          echo "VAULT_REPO_PATH=$(pwd)/vault" >> $GITHUB_ENV
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+
+      - name: Run sync script
+        run: npm run sync
+        env:
+          LIMITLESS_API_KEY: ${{ secrets.LIMITLESS_API_KEY }}
+          VAULT_REPO_PATH: ${{ env.VAULT_REPO_PATH }}
+          VAULT_URL: https://github.com/postcabinets/obsidian-vault.git
+
+      - name: Setup git credentials
+        run: |
+          cd $VAULT_REPO_PATH
+          git config --global user.email "claude-code@openclaws.ai"
+          git config --global user.name "Claude Code"
+          git config --global credential.helper store
+          echo "https://${{ secrets.GITHUB_TOKEN }}@github.com" > ~/.git-credentials
+
+      - name: Push changes to obsidian-vault
+        run: |
+          cd $VAULT_REPO_PATH
+          git add captures/
+          git commit -m "feat: Daily Limitless AI capture from GitHub Actions" || true
+          git push origin main
+
+      - name: Notify on success
+        if: success()
+        run: echo "✅ Sync completed at $(date)"
+
+      - name: Notify on failure
+        if: failure()
+        run: echo "❌ Sync failed at $(date)" && exit 1

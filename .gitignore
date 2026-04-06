@@ -1,0 +1,14 @@
+node_modules/
+.env
+.env.local
+.env.*.local
+*.log
+vault/
+.DS_Store
+dist/
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.git-credentials
