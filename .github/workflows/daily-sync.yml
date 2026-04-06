@@ -37,14 +37,15 @@ jobs:
 
       - name: Push changes to obsidian-vault
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PAT_TOKEN: ${{ secrets.PAT_TOKEN }}
         run: |
           cd $VAULT_REPO_PATH
           git config --global user.email "claude-code@openclaws.ai"
           git config --global user.name "Claude Code"
           git add captures/
           git commit -m "feat: Daily Limitless AI capture from GitHub Actions" || true
-          git remote set-url origin "https://$GITHUB_ACTOR:$GITHUB_TOKEN@github.com/${{ github.repository_owner }}/obsidian-vault.git"
+          # Use PAT for authentication instead of GITHUB_TOKEN (PAT has repo access)
+          git remote set-url origin "https://postcabinets:$PAT_TOKEN@github.com/postcabinets/obsidian-vault.git"
           git push origin main
 
       - name: Notify on success
