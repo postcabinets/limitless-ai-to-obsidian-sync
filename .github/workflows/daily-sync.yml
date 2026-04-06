@@ -35,19 +35,16 @@ jobs:
           VAULT_REPO_PATH: ${{ env.VAULT_REPO_PATH }}
           VAULT_URL: https://github.com/postcabinets/obsidian-vault.git
 
-      - name: Setup git credentials
+      - name: Push changes to obsidian-vault
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           cd $VAULT_REPO_PATH
           git config --global user.email "claude-code@openclaws.ai"
           git config --global user.name "Claude Code"
-          git config --global credential.helper store
-          echo "https://${{ secrets.GITHUB_TOKEN }}@github.com" > ~/.git-credentials
-
-      - name: Push changes to obsidian-vault
-        run: |
-          cd $VAULT_REPO_PATH
           git add captures/
           git commit -m "feat: Daily Limitless AI capture from GitHub Actions" || true
+          git remote set-url origin "https://$GITHUB_ACTOR:$GITHUB_TOKEN@github.com/${{ github.repository_owner }}/obsidian-vault.git"
           git push origin main
 
       - name: Notify on success
